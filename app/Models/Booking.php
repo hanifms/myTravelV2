@@ -43,4 +43,22 @@ class Booking extends Model
     {
         return $this->belongsTo(TravelPackage::class);
     }
+
+    /**
+     * Get the review for the booking.
+     */
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    /**
+     * Check if the booking is eligible for review.
+     *
+     * @return bool
+     */
+    public function isEligibleForReview()
+    {
+        return $this->status === 'completed' && !$this->review;
+    }
 }

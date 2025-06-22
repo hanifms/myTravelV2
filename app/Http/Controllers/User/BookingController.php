@@ -18,7 +18,7 @@ class BookingController extends Controller
      */
     public function myBookings(): View
     {
-        $bookings = Auth::user()->bookings()->with('travelPackage')->latest()->get();
+        $bookings = Auth::user()->bookings()->with(['travelPackage', 'review'])->latest()->get();
 
         return view('user.bookings.index', compact('bookings'));
     }
@@ -74,6 +74,9 @@ class BookingController extends Controller
         if ($booking->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
+
+        // Eager load the review relationship if it exists
+        $booking->load(['review', 'travelPackage']);
 
         return view('user.bookings.show', compact('booking'));
     }

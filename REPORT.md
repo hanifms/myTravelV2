@@ -282,6 +282,119 @@ We added easy-to-find links to:
 
 These links appear in both the main menu and mobile menu.
 
+## Update: Review System Implementation
+
+We've added a review system that lets users leave reviews for travel packages they've completed! Here's what we did:
+
+### 1. Review Model
+
+We created a `Review` model (`app/Models/Review.php`) to store review information:
+
+```php
+class Review extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'booking_id',
+        'rating',
+        'comment',
+        'review_date',
+    ];
+    
+    protected $casts = [
+        'review_date' => 'datetime',
+    ];
+    
+    // Relationships with User and Booking
+}
+```
+
+### 2. Review Database Table
+
+We set up a `reviews` table with these important columns:
+- Who left the review (`user_id`)
+- Which booking they're reviewing (`booking_id`) 
+- A rating from 1-5 stars (`rating`)
+- Their written comment (`comment`)
+- When they left the review (`review_date`)
+
+### 3. Helper Method for Checking Review Eligibility
+
+We added a helper method to the Booking model to check if a booking can be reviewed:
+
+```php
+public function isEligibleForReview()
+{
+    return $this->status === 'completed' && !$this->review;
+}
+```
+
+This makes it easy to check if a user can leave a review (the booking must be completed and not already reviewed).
+
+### 4. Review Controller
+
+We created a controller (`app/Http/Controllers/User/ReviewController.php`) with methods that let users:
+- Create a new review for completed bookings
+- Submit review ratings and comments
+- See all their reviews in one place
+
+```php
+public function store(Request $request, Booking $booking): RedirectResponse
+{
+    // Only allow reviews for eligible bookings
+    if (!$booking->isEligibleForReview()) {
+        return redirect()->route('bookings.show', $booking)
+            ->with('error', 'This booking is not eligible for review.');
+    }
+
+    // Create the review with rating and comment
+    $review = new Review([
+        'user_id' => Auth::id(),
+        'booking_id' => $booking->id,
+        'rating' => $request->rating,
+        'comment' => $request->comment,
+        'review_date' => now(),
+    ]);
+
+    $review->save();
+    
+    return redirect()->route('bookings.show', $booking)
+        ->with('success', 'Thank you for your review!');
+}
+```
+
+### 5. Review Routes
+
+We added new routes in `routes/web.php` for the review system:
+```php
+// Review Routes
+Route::get('/bookings/{booking}/review', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/my-reviews', [ReviewController::class, 'index'])->name('reviews.index');
+```
+
+### 6. Review Views
+
+We created two main views for the review system:
+- A page for submitting new reviews (`resources/views/user/reviews/create.blade.php`) 
+- A page showing all your reviews (`resources/views/user/reviews/index.blade.php`)
+
+We also updated:
+- The bookings list to show review status (`resources/views/user/bookings/index.blade.php`)
+- The booking details page to show review or review option (`resources/views/user/bookings/show.blade.php`) 
+
+### 7. Star Rating System
+
+We made a nice star rating system that:
+- Shows empty stars that you can click to rate (1-5)
+- Turns the stars yellow as you hover over them
+- Updates immediately when you click
+- Shows filled stars for existing reviews
+
+### 8. Navigation Link
+
+We added a "My Reviews" link in both the main menu and mobile menu so users can easily find all their reviews in one place.
+
 ## How It All Works Together
 
 1. You log in to your account
@@ -289,6 +402,9 @@ These links appear in both the main menu and mobile menu.
 3. When you find one you like, you book it by specifying how many people
 4. The system creates your booking and shows it in your "My Bookings" list
 5. You can click on any booking to see more details about it
+6. If your booking is completed, you have the option to leave a review
+7. You can rate your experience with stars and leave a comment
+8. Your review will be visible in your account and helps other users
 
-The system makes sure you can only see your own bookings and properly updates the available slots for each travel package.
+The system ensures that all parts work seamlessly together, providing a smooth travel booking experience.
 

@@ -32,6 +32,7 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Travel Dates</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Travelers</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -53,6 +54,25 @@
                                                     @endif">
                                                     {{ ucfirst($booking->status) }}
                                                 </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                @if($booking->review)
+                                                    <div class="flex items-center">
+                                                        <div class="flex text-yellow-500">
+                                                            @for($i = 1; $i <= 5; $i++)
+                                                                @if($i <= $booking->review->rating)
+                                                                    <span>★</span>
+                                                                @else
+                                                                    <span class="text-gray-300">★</span>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                    </div>
+                                                @elseif($booking->isEligibleForReview())
+                                                    <a href="{{ route('reviews.create', $booking) }}" class="text-indigo-600 hover:text-indigo-900">Leave a Review</a>
+                                                @else
+                                                    <span class="text-gray-400">Not eligible yet</span>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('bookings.show', $booking) }}" class="text-indigo-600 hover:text-indigo-900">View Details</a>

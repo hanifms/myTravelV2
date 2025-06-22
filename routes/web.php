@@ -42,6 +42,11 @@ Route::middleware([
     Route::get('/travel-packages/{travelPackage}/book', [App\Http\Controllers\User\BookingController::class, 'create'])->name('bookings.create');
     Route::post('/travel-packages/{travelPackage}/book', [App\Http\Controllers\User\BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [App\Http\Controllers\User\BookingController::class, 'show'])->name('bookings.show');
+
+    // Review Routes
+    Route::get('/bookings/{booking}/review', [App\Http\Controllers\User\ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/bookings/{booking}/review', [App\Http\Controllers\User\ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/my-reviews', [App\Http\Controllers\User\ReviewController::class, 'index'])->name('reviews.index');
 });
 
 // Admin routes

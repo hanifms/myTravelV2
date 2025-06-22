@@ -24,6 +24,9 @@
                         <x-nav-link href="{{ route('bookings.my-bookings') }}" :active="request()->routeIs('bookings.my-bookings')">
                             {{ __('My Bookings') }}
                         </x-nav-link>
+                        <x-nav-link href="{{ route('reviews.index') }}" :active="request()->routeIs('reviews.index')">
+                            {{ __('My Reviews') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -160,6 +163,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link href="{{ route('bookings.my-bookings') }}" :active="request()->routeIs('bookings.my-bookings')">
                     {{ __('My Bookings') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link href="{{ route('reviews.index') }}" :active="request()->routeIs('reviews.index')">
+                    {{ __('My Reviews') }}
                 </x-responsive-nav-link>
             @endif
         </div>

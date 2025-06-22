@@ -80,16 +80,41 @@
                     </div>
 
                     @if ($booking->status === 'completed')
-                    <div class="mt-6">
-                        <div class="border-t pt-4">
-                            <p class="text-sm font-medium text-gray-700">This travel package is completed. Would you like to leave a review?</p>
-                            <div class="mt-2">
-                                <a href="#" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:shadow-outline-gray transition ease-in-out duration-150">
-                                    Leave a Review
-                                </a>
-                            </div>
+                        <div class="mt-6 border-t pt-4">
+                            @if($booking->review)
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="text-sm font-medium text-gray-700">Your Review</h4>
+                                    <div class="mt-2">
+                                        <div class="flex items-center">
+                                            <div class="flex text-yellow-500">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $booking->review->rating)
+                                                        <span>★</span>
+                                                    @else
+                                                        <span class="text-gray-300">★</span>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <span class="ml-2 text-xs text-gray-500">
+                                                {{ $booking->review->review_date->format('F j, Y') }}
+                                            </span>
+                                        </div>
+                                        @if($booking->review->comment)
+                                            <p class="mt-2 text-sm text-gray-700">{{ $booking->review->comment }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @elseif($booking->isEligibleForReview())
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700">This travel package is completed. Would you like to leave a review?</p>
+                                    <div class="mt-2">
+                                        <a href="{{ route('reviews.create', $booking) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:border-indigo-900 focus:shadow-outline-indigo transition ease-in-out duration-150">
+                                            Leave a Review
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
-                    </div>
                     @endif
 
                     <div class="mt-6 flex justify-between">
