@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             AdminUserSeeder::class,
+            TravelPackageSeeder::class,
         ]);
 
         // Create a regular user for testing

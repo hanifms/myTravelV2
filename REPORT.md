@@ -129,17 +129,72 @@ We wrote tests to make sure everything works:
 - Test that admin users get redirected to their dashboard
 - Test that user accounts can be deleted properly
 
+### 8. Travel Packages Feature
+
+We've added the ability for users to browse travel packages:
+
+- **Travel Package Model**: Created a model (`app/Models/TravelPackage.php`) to store package info:
+  ```php
+  class TravelPackage extends Model
+  {
+      protected $fillable = [
+          'name',
+          'description',
+          'destination',
+          'price',
+          'start_date',
+          'end_date',
+          'available_slots',
+      ];
+  }
+  ```
+
+- **Database Table**: Created a `travel_packages` table with fields for package details:
+  - Package name and description
+  - Destination (country)
+  - Price per person
+  - Start and end dates
+  - Number of available slots
+
+- **Sample Data**: Added a seeder (`database/seeders/TravelPackageSeeder.php`) with example travel packages to destinations like Korea, Japan, China, Malaysia, and Australia.
+
+- **User Interface**: Created pages where users can:
+  - See a list of all available packages (`resources/views/user/travel-packages/index.blade.php`)
+  - View detailed information about each package (`resources/views/user/travel-packages/show.blade.php`)
+
+- **Controller**: Set up a controller (`app/Http/Controllers/User/TravelController.php`) with methods to:
+  ```php
+  public function index(): View  // Shows all travel packages
+  {
+      $travelPackages = TravelPackage::all();
+      return view('user.travel-packages.index', compact('travelPackages'));
+  }
+
+  public function show(TravelPackage $travelPackage): View  // Shows details of one package
+  {
+      return view('user.travel-packages.show', compact('travelPackage'));
+  }
+  ```
+
+- **Routes**: Added routes to access these pages:
+  ```php
+  Route::get('/travel-packages', [TravelController::class, 'index'])->name('travel-packages.index');
+  Route::get('/travel-packages/{travelPackage}', [TravelController::class, 'show'])->name('travel-packages.show');
+  ```
+
+- **Dashboard Link**: Updated the user dashboard to include a link to browse travel packages.
+
 ## How It All Works Together
 
 1. When a user registers, they're automatically assigned the "user" role
 2. When they go to the dashboard, the system checks their role
 3. If they're an admin, they get sent to the admin dashboard
-4. If they try to access pages they shouldn't, the middleware blocks them
-5. Users can manage their accounts, including deleting them when needed
+4. Regular users can click "Browse Travel Packages" to see all available trips
+5. Users can view details about each package, including price, dates, and availability
 
 ## What's Next
 
-In the next phase, we'll add travel packages that users can browse and book.
+In the next phase, we'll add the ability for users to book travel packages.
 
 > **Note**: Laravel 12 doesn't use Kernel.php files anymore to reduce unnecessary code.
 

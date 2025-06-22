@@ -27,6 +27,16 @@ Route::middleware([
     })->name('dashboard');
 });
 
+// User routes
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/travel-packages', [App\Http\Controllers\User\TravelController::class, 'index'])->name('travel-packages.index');
+    Route::get('/travel-packages/{travelPackage}', [App\Http\Controllers\User\TravelController::class, 'show'])->name('travel-packages.show');
+});
+
 // Admin routes
 Route::middleware([
     'auth:sanctum',
