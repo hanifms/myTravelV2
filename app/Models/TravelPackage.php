@@ -31,4 +31,12 @@ class TravelPackage extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
+    /**
+     * Get the bookings for the travel package.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

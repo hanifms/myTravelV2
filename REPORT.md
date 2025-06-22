@@ -184,17 +184,111 @@ We've added the ability for users to browse travel packages:
 
 - **Dashboard Link**: Updated the user dashboard to include a link to browse travel packages.
 
-## How It All Works Together
-
-1. When a user registers, they're automatically assigned the "user" role
-2. When they go to the dashboard, the system checks their role
-3. If they're an admin, they get sent to the admin dashboard
-4. Regular users can click "Browse Travel Packages" to see all available trips
-5. Users can view details about each package, including price, dates, and availability
-
 ## What's Next
 
 In the next phase, we'll add the ability for users to book travel packages.
 
 > **Note**: Laravel 12 doesn't use Kernel.php files anymore to reduce unnecessary code.
+
+## Update: Booking System Implementation
+
+We've now added a booking system that lets users book travel packages! Here's what we did:
+
+### 1. Booking Model
+
+We created a `Booking` model (`app/Models/Booking.php`) to store booking information:
+
+```php
+class Booking extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'travel_package_id',
+        'booking_date',
+        'status',
+        'number_of_travelers',
+    ];
+    
+    protected $casts = [
+        'booking_date' => 'datetime',
+    ];
+    
+    // Relationships with User and TravelPackage
+}
+```
+
+### 2. Booking Database Table
+
+We set up a `bookings` table with these important columns:
+- Who made the booking (`user_id`)
+- Which travel package they booked (`travel_package_id`)
+- When they made the booking (`booking_date`)
+- Booking status (`pending`, `confirmed`, `completed`, or `on_hold`)
+- How many people are traveling (`number_of_travelers`)
+
+### 3. Booking Controller
+
+We created a controller (`app/Http/Controllers/User/BookingController.php`) with methods that let users:
+- See all their bookings
+- Create a new booking
+- View details of a specific booking
+
+```php
+public function myBookings(): View
+{
+    // Get all bookings for the logged-in user
+    $bookings = Auth::user()->bookings()->with('travelPackage')->latest()->get();
+    
+    return view('user.bookings.index', compact('bookings'));
+}
+```
+
+### 4. Booking Routes
+
+We added new routes in `routes/web.php` for the booking system:
+```php
+// Booking Routes
+Route::get('/my-bookings', [BookingController::class, 'myBookings'])
+    ->name('bookings.my-bookings');
+Route::get('/travel-packages/{travelPackage}/book', [BookingController::class, 'create'])
+    ->name('bookings.create');
+Route::post('/travel-packages/{travelPackage}/book', [BookingController::class, 'store'])
+    ->name('bookings.store');
+Route::get('/bookings/{booking}', [BookingController::class, 'show'])
+    ->name('bookings.show');
+```
+
+### 5. Booking Views
+
+We created three main views for the booking system:
+- A page that lists all your bookings (`resources/views/user/bookings/index.blade.php`)
+- A form for making a new booking (`resources/views/user/bookings/create.blade.php`)
+- A page showing details of one booking (`resources/views/user/bookings/show.blade.php`)
+
+### 6. Booking Process
+
+Here's how the booking process works:
+1. You find a travel package you like and click "Book This Package"
+2. You enter how many people are traveling
+3. The system checks if there are enough available slots
+4. If yes, it creates your booking and reduces the available slots
+5. You can then see all your bookings on the "My Bookings" page
+
+### 7. Navigation Links
+
+We added easy-to-find links to:
+- Browse travel packages
+- View your bookings
+
+These links appear in both the main menu and mobile menu.
+
+## How It All Works Together
+
+1. You log in to your account
+2. You browse available travel packages
+3. When you find one you like, you book it by specifying how many people
+4. The system creates your booking and shows it in your "My Bookings" list
+5. You can click on any booking to see more details about it
+
+The system makes sure you can only see your own bookings and properly updates the available slots for each travel package.
 

@@ -15,6 +15,16 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <!-- Only show these links to regular users -->
+                    @if(Auth::check() && !Auth::user()->isAdmin())
+                        <x-nav-link href="{{ route('travel-packages.index') }}" :active="request()->routeIs('travel-packages.index')">
+                            {{ __('Travel Packages') }}
+                        </x-nav-link>
+                        <x-nav-link href="{{ route('bookings.my-bookings') }}" :active="request()->routeIs('bookings.my-bookings')">
+                            {{ __('My Bookings') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -142,6 +152,16 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            <!-- Only show these links to regular users -->
+            @if(Auth::check() && !Auth::user()->isAdmin())
+                <x-responsive-nav-link href="{{ route('travel-packages.index') }}" :active="request()->routeIs('travel-packages.index')">
+                    {{ __('Travel Packages') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link href="{{ route('bookings.my-bookings') }}" :active="request()->routeIs('bookings.my-bookings')">
+                    {{ __('My Bookings') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

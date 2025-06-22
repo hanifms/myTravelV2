@@ -58,9 +58,15 @@
                     </div>
 
                     <div class="mt-8 flex justify-end">
-                        <button class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
-                            Book This Package
-                        </button>
+                        @if ($travelPackage->available_slots > 0)
+                            <a href="{{ route('bookings.create', $travelPackage) }}" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+                                Book This Package
+                            </a>
+                        @else
+                            <button disabled class="px-6 py-3 bg-gray-400 text-white font-medium rounded-lg cursor-not-allowed">
+                                No Available Slots
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>
