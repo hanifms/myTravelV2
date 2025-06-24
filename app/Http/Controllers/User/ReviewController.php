@@ -15,7 +15,7 @@ class ReviewController extends Controller
     /**
      * Display a form to create a new review for a booking.
      */
-    public function create(Booking $booking): View
+    public function create(Booking $booking): View|RedirectResponse
     {
         // Ensure the booking belongs to the authenticated user
         if ($booking->user_id !== Auth::id()) {
@@ -85,5 +85,19 @@ class ReviewController extends Controller
     {
         $reviews = Auth::user()->reviews()->with('booking.travelPackage')->latest('review_date')->paginate(10);
         return view('user.reviews.index', compact('reviews'));
+    }
+
+    /**
+     * Display the specified review.
+     */
+    public function show(Review $review): View|RedirectResponse
+    {
+        // Ensure the review belongs to the authenticated user
+        if ($review->user_id !== Auth::id()) {
+            return redirect()->route('reviews.index')
+                ->with('error', 'You cannot view this review.');
+        }
+
+        return view('user.reviews.show', compact('review'));
     }
 }

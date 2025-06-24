@@ -29,6 +29,7 @@
                                 <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                     <option value="all">All Statuses</option>
                                     <option value="pending" {{ isset($status) && $status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="confirmed" {{ isset($status) && $status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
                                     <option value="on_hold" {{ isset($status) && $status === 'on_hold' ? 'selected' : '' }}>On Hold</option>
                                     <option value="ongoing" {{ isset($status) && $status === 'ongoing' ? 'selected' : '' }}>Ongoing</option>
                                     <option value="completed" {{ isset($status) && $status === 'completed' ? 'selected' : '' }}>Completed</option>
@@ -89,6 +90,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                 {{ $booking->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ $booking->status === 'confirmed' ? 'bg-green-100 text-green-800' : '' }}
                                                 {{ $booking->status === 'ongoing' ? 'bg-blue-100 text-blue-800' : '' }}
                                                 {{ $booking->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                                 {{ $booking->status === 'on_hold' ? 'bg-orange-100 text-orange-800' : '' }}

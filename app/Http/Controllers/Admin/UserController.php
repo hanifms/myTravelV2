@@ -98,6 +98,7 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Update the user attributes directly
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role_id = $request->role_id;
@@ -106,6 +107,7 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
         }
 
+        // Save the changes to the database
         $user->save();
 
         return redirect()->route('admin.users.index')
@@ -119,8 +121,7 @@ class UserController extends Controller
     {
         // Check if user is trying to delete themselves
         if (Auth::id() === $user->id) {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'You cannot delete your own account.');
+            return back()->withErrors(['user' => 'You cannot delete your own account.']);
         }
 
         // Check if user is an admin
@@ -133,5 +134,23 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Change the role of a specific user.
+     */
+    public function changeRole(Request $request, User $user)
+    {
+        // Validate the request
+        $request->validate([
+            'role_id' => ['required', 'exists:roles,id'],
+        ]);
+
+        // Update user's role
+        $user->role_id = $request->role_id;
+        $user->save();
+
+        return redirect()->route('admin.users.show', $user)
+            ->with('success', 'User role updated successfully.');
     }
 }

@@ -11,6 +11,7 @@ A robust travel booking platform built with Laravel 12, featuring role-based acc
 - [User Roles and Permissions](#user-roles-and-permissions)
 - [Database Schema](#database-schema)
 - [Security Implementations](#security-implementations)
+- [Testing](#testing)
 - [Screenshots](#screenshots)
 - [License](#license)
 
@@ -155,6 +156,147 @@ Key relationships:
 - **CSRF Protection**: Protection against cross-site request forgery
 - **SQL Injection Protection**: Use of Eloquent ORM and prepared statements
 - **XSS Protection**: Blade template engine escapes output by default
+
+## Testing
+
+The application includes a comprehensive test suite to ensure all features work correctly and to catch regressions during development.
+
+### Test Structure
+
+- **Feature Tests**: Test the application as a user would interact with it
+  - `tests/Feature/Admin/`: Tests for admin functionality
+  - `tests/Feature/Bookings/`: Tests for booking-related features
+  - `tests/Feature/Reviews/`: Tests for review functionality
+  - `tests/Feature/TravelPackages/`: Tests for travel package features
+- **Unit Tests**: Test individual components in isolation
+  - `tests/Unit/Models/`: Tests for model relationships and methods
+  - `tests/Unit/Helpers/`: Tests for helper functions
+
+### Setting Up the Testing Database
+
+We've included a helper script to set up the testing database:
+
+just run the below
+
+```bash
+php setup_test_db.php
+```
+
+This script:
+1. Creates a dedicated MySQL database for testing (`mytravelv2_testing`)
+2. Runs migrations on the testing database
+3. Seeds the database with test data
+
+### Running Tests
+
+After setting up the testing database, you can run the tests:
+
+```bash
+# Run all tests
+php artisan test
+
+# Run a specific test file
+php artisan test --filter=UserTest
+
+# Run tests with coverage report
+php artisan test --coverage
+```
+
+### Testing Environment Configuration
+
+The testing environment is configured in `.env.testing`. By default, it uses MySQL to ensure compatibility with the ENUM fields in our schema, particularly in the `bookings` table.
+
+### Common Testing Issues
+
+If you encounter issues with the ENUM fields in the `status` column of the `bookings` table, make sure:
+
+1. You're using MySQL for testing (SQLite doesn't support ENUM)
+2. The testing database was created correctly using the setup script
+3. The migrations ran successfully
+
+You can check the status of the bookings table ENUM field by running:
+
+```bash
+php check_bookings_enum.php
+```
+
+- **Unit Tests**: Test individual components in isolation
+  - `tests/Unit/Models/`: Tests for model relationships and methods
+  - `tests/Unit/Helpers/`: Tests for helper classes like SecurityHelper
+
+### Running Tests
+
+Run all tests:
+```bash
+php artisan test
+```
+
+Run specific test files or directories:
+```bash
+# Run all feature tests
+php artisan test --path=tests/Feature
+
+# Run specific test file
+php artisan test tests/Feature/Reviews/ReviewCreationTest.php
+
+# Run tests with specific filter
+php artisan test --filter=test_users_can_submit_review_for_completed_booking
+```
+
+### Using Tests During Development
+
+1. **Test-Driven Development**:
+   - Write tests for new features before implementing them
+   - Run `php artisan test --filter=YourNewTest` to see it fail
+   - Implement the feature until the test passes
+
+2. **Regression Testing**:
+   - After making changes, run `php artisan test` to ensure nothing was broken
+   - Focus on specific areas: `php artisan test --path=tests/Feature/TravelPackages`
+
+3. **Debugging Failed Tests**:
+   - Use `php artisan test --verbose` for detailed output
+   - Add `$this->withoutExceptionHandling();` at the beginning of test methods to see full exception traces
+
+4. **Database Testing**:
+   - Tests use MySQL database to ensure compatibility with production environment
+   - Tests automatically reset the database between test cases
+   - Use factories to create test data: `User::factory()->withUserRole()->create()`
+   
+5. **Setting Up the Testing Environment**:
+   ```bash
+   # Create and set up the test database
+   php setup_test_db.php
+   ```
+   - Ensure the `.env.testing` file has the correct database configuration
+   - Make sure your MySQL server is running
+   - Verify phpunit.xml has the correct DB_CONNECTION and DB_DATABASE settings
+
+### Key Test Files
+
+- **AdminBookingManagementTest**: Tests booking management by administrators
+- **AdminTravelPackageManagementTest**: Tests travel package CRUD operations
+- **AdminUserManagementTest**: Tests user management functionality
+- **SecurityHelperTest**: Tests the security utility methods
+- **ReviewCreationTest**: Tests the review submission process
+- **TravelPackageListingTest**: Tests travel package listing and visibility
+
+### Creating New Tests
+
+```bash
+# Create a new test file
+php artisan make:test NewFeatureTest --feature
+
+# Create a new unit test
+php artisan make:test Models/NewModelTest --unit
+```
+
+Follow these best practices when creating tests:
+- Name test methods descriptively (`test_users_can_view_their_own_reviews`)
+- Test both successful and failure scenarios
+- Use test data factories to create consistent test data
+- Keep tests isolated (don't rely on data created by other tests)
+- Add comments explaining complex assertions
 
 ## Screenshots
 

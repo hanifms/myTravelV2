@@ -16,7 +16,14 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('travel_package_id')->constrained()->onDelete('cascade');
             $table->dateTime('booking_date')->default(now());
-            $table->enum('status', ['pending', 'confirmed', 'on_hold', 'completed'])->default('pending');
+
+            // Use enum for MySQL, string for SQLite
+            if (config('database.default') === 'mysql') {
+                $table->enum('status', ['pending', 'confirmed', 'on_hold', 'completed', 'ongoing', 'cancelled'])->default('pending');
+            } else {
+                $table->string('status')->default('pending');
+            }
+
             $table->integer('number_of_travelers')->default(1);
             $table->timestamps();
         });

@@ -91,8 +91,11 @@ class TravelPackageController extends Controller
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'available_slots' => ['required', 'integer', 'min:0'],
-            'is_visible' => ['sometimes'],
+            'is_visible' => ['sometimes', 'boolean'],
         ]);
+
+        // The is_visible value needs special handling as checkboxes don't submit a value when unchecked
+        $isVisible = $request->has('is_visible') && $request->is_visible ? true : false;
 
         $travelPackage->update([
             'name' => $request->name,
@@ -102,7 +105,7 @@ class TravelPackageController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'available_slots' => $request->available_slots,
-            'is_visible' => $request->has('is_visible'),
+            'is_visible' => $isVisible,
         ]);
 
         return redirect()->route('admin.travel-packages.index')
@@ -117,7 +120,7 @@ class TravelPackageController extends Controller
         // Check if the package has any active bookings before allowing deletion
         if ($travelPackage->hasActiveBookings()) {
             return redirect()->route('admin.travel-packages.index')
-                ->with('error', "Cannot delete this package as it has active bookings (pending, on hold, or ongoing). You can hide it by setting it to invisible instead.");
+                ->withErrors(['package' => "Cannot delete this package as it has active bookings (pending, on hold, or ongoing). You can hide it by setting it to invisible instead."]);
         }
 
         // If there are completed bookings, warn but allow deletion

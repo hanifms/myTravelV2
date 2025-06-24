@@ -66,11 +66,13 @@ class BookingController extends Controller
         // Store the previous status for conditional checks
         $previousStatus = $booking->status;
 
-        // Check if the booking has a review and status is being changed from completed
-        $hasReview = $booking->review()->exists();
-        if ($hasReview && $previousStatus === Booking::STATUS_COMPLETED && $request->status !== Booking::STATUS_COMPLETED) {
-            return redirect()->route('admin.bookings.edit', $booking)
-                ->with('error', 'Cannot change status from "completed" when a review exists. This would create inconsistency in the application.');
+        // Check if the booking is completed and has a review
+        if ($previousStatus === Booking::STATUS_COMPLETED) {
+            $hasReview = $booking->review()->exists();
+
+            if ($hasReview && $request->status !== Booking::STATUS_COMPLETED) {
+                return back()->withErrors(['status' => 'Cannot change status from "completed" when a review exists.']);
+            }
         }
 
         // Update the booking status
@@ -80,8 +82,7 @@ class BookingController extends Controller
         // Additional business logic when a booking is marked as completed
         if ($request->status === Booking::STATUS_COMPLETED && $previousStatus !== Booking::STATUS_COMPLETED) {
             // The booking is now eligible for review
-            // We could notify the user that they can leave a review,
-            // but that's beyond the scope of this implementation
+            // We could notify the user that they can leave a review
         }
 
         return redirect()->route('admin.bookings.index')

@@ -57,6 +57,32 @@
                         </p>
                     </div>
 
+                    <!-- Reviews Section -->
+                    <div class="mt-8 mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Customer Reviews</h2>
+
+                        @if($reviews->count() > 0)
+                            <div class="space-y-4">
+                                @foreach($reviews as $review)
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <div class="flex items-center mb-2">
+                                            <div class="flex">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <span class="{{ $i <= $review->rating ? 'text-yellow-500' : 'text-gray-300' }}">★</span>
+                                                @endfor
+                                            </div>
+                                            <span class="ml-2 text-gray-600 text-sm">{{ $review->created_at->format('M d, Y') }}</span>
+                                        </div>
+                                        <p class="text-gray-700 mb-2">{{ $review->comment }}</p>
+                                        <p class="text-sm text-gray-500">By: {{ $review->user->name }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-500 italic">No reviews yet for this package.</p>
+                        @endif
+                    </div>
+
                     <div class="mt-8 flex justify-end">
                         @if ($travelPackage->available_slots > 0)
                             <a href="{{ route('bookings.create', $travelPackage) }}" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
