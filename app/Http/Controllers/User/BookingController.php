@@ -19,12 +19,12 @@ class BookingController extends Controller
     public function myBookings(Request $request): View
     {
         $query = Auth::user()->bookings()->with(['travelPackage', 'review']);
-        
+
         // Filter by status if provided
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
-        
+
         $bookings = $query->latest()->get();
         $status = $request->status ?? null;
 
