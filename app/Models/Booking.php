@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     /**
+     * Status constants for bookings
+     */
+    const STATUS_PENDING = 'pending';
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_ON_HOLD = 'on_hold';
+    const STATUS_ONGOING = 'ongoing';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CANCELLED = 'cancelled';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -59,6 +69,6 @@ class Booking extends Model
      */
     public function isEligibleForReview()
     {
-        return $this->status === 'completed' && !$this->review;
+        return $this->status === self::STATUS_COMPLETED && !$this->review;
     }
 }

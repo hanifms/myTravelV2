@@ -16,11 +16,19 @@ class BookingController extends Controller
     /**
      * Display a list of the user's bookings.
      */
-    public function myBookings(): View
+    public function myBookings(Request $request): View
     {
-        $bookings = Auth::user()->bookings()->with(['travelPackage', 'review'])->latest()->get();
+        $query = Auth::user()->bookings()->with(['travelPackage', 'review']);
+        
+        // Filter by status if provided
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        $bookings = $query->latest()->get();
+        $status = $request->status ?? null;
 
-        return view('user.bookings.index', compact('bookings'));
+        return view('user.bookings.index', compact('bookings', 'status'));
     }
 
     /**

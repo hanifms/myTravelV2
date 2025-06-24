@@ -169,16 +169,13 @@ Remember to commit your code frequently, especially after completing each major 
 **Goal:** Improve user experience and ensure robustness.
 
 * **Step 6.1: Basic UI/UX Improvements**
-    * Add navigation links for users (My Bookings, Travel Packages).
-    * Add navigation links for admin (Dashboard, Manage Users, Manage Bookings, Manage Packages).
-    * Consider using a simple CSS framework (e.g., Tailwind CSS, already included with Jetstream) for better aesthetics.
-    * Basic validation on all forms (booking, review, admin CRUD).
+    * manage views by removing unnecessary boilerplate templates, make sure routing is optimized
+    * Use a simple CSS framework (e.g., Tailwind CSS, already included with Jetstream) for better aesthetics. 
+    * Use Human Computer Interaction principles to improve the UI/UX
+    * make the app theme to be white, light blue, dark blue
+    * Design the website so that it feels like a modern website
 
-* **Step 6.2: Error Handling & Edge Cases**
-    * Handle cases where `available_slots` might be 0 for a package.
-    * Inform users if a booking fails.
-
-* **Step 6.3: Code Organization & Comments**
+* **Step 6.2: Code Organization & Comments**
     * Ensure controllers, models, and views are well-organized.
     * Add comments where necessary to explain complex logic.
 

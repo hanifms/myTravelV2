@@ -36,11 +36,12 @@ class BookingController extends Controller
     public function edit(Booking $booking): View
     {
         $statusOptions = [
-            'pending' => 'Pending',
-            'on_hold' => 'On Hold',
-            'ongoing' => 'Ongoing',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled'
+            Booking::STATUS_PENDING => 'Pending',
+            Booking::STATUS_CONFIRMED => 'Confirmed',
+            Booking::STATUS_ON_HOLD => 'On Hold',
+            Booking::STATUS_ONGOING => 'Ongoing',
+            Booking::STATUS_COMPLETED => 'Completed',
+            Booking::STATUS_CANCELLED => 'Cancelled'
         ];
 
         return view('admin.bookings.edit', compact('booking', 'statusOptions'));
@@ -52,7 +53,14 @@ class BookingController extends Controller
     public function update(Request $request, Booking $booking)
     {
         $request->validate([
-            'status' => ['required', 'string', 'in:pending,on_hold,ongoing,completed,cancelled'],
+            'status' => ['required', 'string', 'in:'.implode(',', [
+                Booking::STATUS_PENDING,
+                Booking::STATUS_CONFIRMED,
+                Booking::STATUS_ON_HOLD,
+                Booking::STATUS_ONGOING,
+                Booking::STATUS_COMPLETED,
+                Booking::STATUS_CANCELLED
+            ])],
         ]);
 
         // Store the previous status for conditional checks
@@ -60,7 +68,7 @@ class BookingController extends Controller
 
         // Check if the booking has a review and status is being changed from completed
         $hasReview = $booking->review()->exists();
-        if ($hasReview && $previousStatus === 'completed' && $request->status !== 'completed') {
+        if ($hasReview && $previousStatus === Booking::STATUS_COMPLETED && $request->status !== Booking::STATUS_COMPLETED) {
             return redirect()->route('admin.bookings.edit', $booking)
                 ->with('error', 'Cannot change status from "completed" when a review exists. This would create inconsistency in the application.');
         }
@@ -70,7 +78,7 @@ class BookingController extends Controller
         $booking->save();
 
         // Additional business logic when a booking is marked as completed
-        if ($request->status === 'completed' && $previousStatus !== 'completed') {
+        if ($request->status === Booking::STATUS_COMPLETED && $previousStatus !== Booking::STATUS_COMPLETED) {
             // The booking is now eligible for review
             // We could notify the user that they can leave a review,
             // but that's beyond the scope of this implementation
