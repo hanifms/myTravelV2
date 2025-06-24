@@ -14,7 +14,7 @@ class TravelController extends Controller
      */
     public function index(): View
     {
-        $travelPackages = TravelPackage::all();
+        $travelPackages = TravelPackage::visible()->get();
 
         return view('user.travel-packages.index', compact('travelPackages'));
     }
@@ -24,6 +24,12 @@ class TravelController extends Controller
      */
     public function show(TravelPackage $travelPackage): View
     {
+        // If the package is not visible, redirect back with an error
+        if (!$travelPackage->is_visible) {
+            return redirect()->route('travel-packages.index')
+                ->with('error', 'The requested travel package is not available.');
+        }
+
         return view('user.travel-packages.show', compact('travelPackage'));
     }
 }

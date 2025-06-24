@@ -408,3 +408,125 @@ We added a "My Reviews" link in both the main menu and mobile menu so users can 
 
 The system ensures that all parts work seamlessly together, providing a smooth travel booking experience.
 
+## Update: Admin Panel Enhancement
+
+We've improved the admin panel to make it easier to manage travel packages! Here's what we added:
+
+### 1. Package Visibility Control
+
+We made it so admins can hide or show travel packages from users:
+
+- **Database Change**: Added `is_visible` column to the `travel_packages` table
+  ```php
+  // In the migration file
+  $table->boolean('is_visible')->default(true);
+  ```
+
+- **Model Update**: Updated `TravelPackage` model (`app/Models/TravelPackage.php`) to include visibility
+  ```php
+  protected $fillable = [
+      // ...existing fields...
+      'is_visible',
+  ];
+  
+  protected $casts = [
+      // ...existing casts...
+      'is_visible' => 'boolean',
+  ];
+  
+  // A helper function that only shows visible packages to users
+  public function scopeVisible($query)
+  {
+      return $query->where('is_visible', true);
+  }
+  ```
+
+- **Admin Controls**: Added show/hide button in admin panel (`resources/views/admin/travel-packages/index.blade.php`)
+  ```php
+  <form action="{{ route('admin.travel-packages.toggle-visibility', $package) }}" method="POST" class="inline">
+      @csrf
+      @method('PUT')
+      <button type="submit">
+          {{ $package->is_visible ? 'Hide' : 'Show' }}
+      </button>
+  </form>
+  ```
+
+### 2. Smart Deletion Rules
+
+We added rules to prevent admins from accidentally deleting packages that people have booked:
+
+- **Safety Check**: In `TravelPackageController.php`, we check before deleting:
+  ```php
+  public function destroy(TravelPackage $travelPackage)
+  {
+      // Don't allow deletion if people are still going on this trip
+      if ($travelPackage->hasActiveBookings()) {
+          return redirect()->route('admin.travel-packages.index')
+              ->with('error', "Cannot delete this package as it has active bookings. You can hide it instead.");
+      }
+      
+      // Rest of the deletion code...
+  }
+  ```
+
+- **Helper Method**: Added to `TravelPackage` model to check for active bookings
+  ```php
+  public function hasActiveBookings()
+  {
+      return $this->bookings()->whereNotIn('status', ['completed', 'cancelled'])->exists();
+  }
+  ```
+
+### 3. Booking Status Protection
+
+We made sure admins can't accidentally mess up the booking status if a review exists:
+
+- **Status Check**: In `BookingController.php`, we prevent changing completed bookings with reviews:
+  ```php
+  // Check if the booking has a review and status is being changed from completed
+  $hasReview = $booking->review()->exists();
+  if ($hasReview && $previousStatus === 'completed' && $request->status !== 'completed') {
+      return redirect()->route('admin.bookings.edit', $booking)
+          ->with('error', 'Cannot change status from "completed" when a review exists.');
+  }
+  ```
+
+- **Warning Messages**: Added clear warnings in the admin interface
+  ```html
+  @if($booking->review()->exists())
+      <div class="warning-box">
+          <p>This booking has a review. If the booking status is changed from "completed", 
+             the review will become inconsistent with the booking status.</p>
+      </div>
+  @endif
+  ```
+
+### 4. User Experience Improvements
+
+We made everything easier to use:
+
+- **Form Controls**: Added visibility checkbox in create/edit forms
+  ```html
+  <div class="mb-4">
+      <label for="is_visible" class="inline-flex items-center">
+          <input type="checkbox" name="is_visible" id="is_visible" {{ old('is_visible') ? 'checked' : '' }} value="1">
+          <span class="ml-2">Make this package visible to users</span>
+      </label>
+  </div>
+  ```
+
+- **Error Messages**: Added helpful messages when things go wrong
+- **Color Coding**: Used colors to show status (green for visible, red for hidden)
+
+### How It All Works Together
+
+1. Admins can create new travel packages and choose if they're visible to users
+2. Users can only see and book packages that admins have made visible
+3. If a package isn't selling well, admins can hide it instead of deleting it
+4. If a package has active bookings, it can't be deleted (preventing mistakes)
+5. Once a booking is completed and has a review, its status is protected
+6. All actions show clear success, warning or error messages
+
+These improvements help admins manage travel packages safely while keeping the database consistent and user experience smooth.
+

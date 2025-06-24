@@ -28,6 +28,11 @@ class BookingController extends Controller
      */
     public function create(TravelPackage $travelPackage): View
     {
+        // Check if the package is visible
+        if (!$travelPackage->is_visible) {
+            abort(404, 'The travel package is not available.');
+        }
+
         return view('user.bookings.create', compact('travelPackage'));
     }
 
@@ -38,6 +43,12 @@ class BookingController extends Controller
      */
     public function store(Request $request, TravelPackage $travelPackage): RedirectResponse
     {
+        // Check if the package is visible
+        if (!$travelPackage->is_visible) {
+            return redirect()->route('travel-packages.index')
+                ->with('error', 'The requested travel package is not available.');
+        }
+
         $request->validate([
             'number_of_travelers' => 'required|integer|min:1|max:' . $travelPackage->available_slots,
         ]);

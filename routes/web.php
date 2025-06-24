@@ -57,4 +57,16 @@ Route::middleware([
     AdminMiddleware::class,
 ])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // User management routes
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
+    // Booking management routes
+    Route::resource('bookings', \App\Http\Controllers\Admin\BookingController::class)->except(['create', 'store', 'destroy']);
+    Route::get('bookings/filter', [\App\Http\Controllers\Admin\BookingController::class, 'filter'])->name('bookings.filter');
+
+    // Travel Package management routes
+    Route::resource('travel-packages', \App\Http\Controllers\Admin\TravelPackageController::class);
+    Route::put('travel-packages/{travelPackage}/toggle-visibility', [\App\Http\Controllers\Admin\TravelPackageController::class, 'toggleVisibility'])
+        ->name('travel-packages.toggle-visibility');
 });

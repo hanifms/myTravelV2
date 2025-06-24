@@ -19,6 +19,7 @@ class TravelPackage extends Model
         'start_date',
         'end_date',
         'available_slots',
+        'is_visible',
     ];
 
     /**
@@ -30,6 +31,7 @@ class TravelPackage extends Model
         'price' => 'decimal:2',
         'start_date' => 'date',
         'end_date' => 'date',
+        'is_visible' => 'boolean',
     ];
 
     /**
@@ -38,5 +40,26 @@ class TravelPackage extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Check if the package has any non-completed bookings.
+     *
+     * @return bool
+     */
+    public function hasActiveBookings()
+    {
+        return $this->bookings()->whereNotIn('status', ['completed', 'cancelled'])->exists();
+    }
+
+    /**
+     * Scope a query to only include visible travel packages.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where('is_visible', true);
     }
 }
