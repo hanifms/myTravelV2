@@ -5,7 +5,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="Explore the world with our travel booking platform. Discover exciting destinations, book your next adventure, and create memories that last a lifetime.">
 
-        <title>{{ config('app.name', 'Travel Booking') }} - {{ isset($header) ? (is_string($header) ? $header : strip_tags($header)) : 'Your Gateway to Adventure' }}</title>
+        <title>{{ config('app.name', 'myTravelV2') }} - {{ isset($header) ? (is_string($header) ? $header : strip_tags($header)) : 'Your Travel Experience' }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

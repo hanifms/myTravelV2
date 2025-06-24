@@ -7,7 +7,7 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ Auth::check() ? route('dashboard') : '/' }}" class="flex items-center">
                         <x-application-logo class="block h-9 w-auto text-primary-600" />
-                        <span class="ml-3 text-xl font-semibold text-primary-800 hidden sm:block">Travel Booking</span>
+                        <span class="ml-3 text-xl font-semibold text-primary-800 hidden sm:block">myTravelV2</span>
                     </a>
                 </div>
 
