@@ -1,61 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Travel Booking Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A robust travel booking platform built with Laravel 12, featuring role-based access control, travel package management, booking system, and review functionality.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Features](#features)
+- [System Requirements](#system-requirements)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [User Roles and Permissions](#user-roles-and-permissions)
+- [Database Schema](#database-schema)
+- [Security Implementations](#security-implementations)
+- [Screenshots](#screenshots)
+- [License](#license)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### For Users
+- **Account Management**: Register, login, and manage profile details
+- **Travel Package Browsing**: View all available travel packages with details
+- **Booking System**: Book travel packages and track booking status
+- **Reviews & Ratings**: Leave reviews and ratings for completed travels
+- **Booking History**: View history of all bookings with status information
 
-## Learning Laravel
+### For Administrators
+- **User Management**: View, edit, and manage user accounts
+- **Travel Package Management**: Create, update, and delete travel packages
+- **Booking Management**: Update booking statuses and view all bookings
+- **Review Monitoring**: View all user reviews across the platform
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## System Requirements
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- MySQL or SQLite
+- Laravel requirements (BCMath, Ctype, JSON, Mbstring, OpenSSL, PDO, Tokenizer, XML)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+Follow these steps to set up the project locally:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/travel-booking-app.git
+   cd travel-booking-app
+   ```
 
-### Premium Partners
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. **Install NPM dependencies and build assets**
+   ```bash
+   npm install && npm run dev
+   ```
 
-## Contributing
+4. **Set up environment file**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Configure the database**
+   
+   Edit the `.env` file to set your database connection details:
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=travel_booking
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+   
+   For SQLite (simpler setup):
+   ```
+   DB_CONNECTION=sqlite
+   # Comment out or remove other DB_* entries
+   ```
+   Then create the database file:
+   ```bash
+   touch database/database.sqlite
+   ```
 
-## Code of Conduct
+6. **Run migrations and seed the database**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+7. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
 
-## Security Vulnerabilities
+8. **Access the application**
+   
+   Open your browser and navigate to `http://localhost:8000`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Default Admin Account
+
+After seeding the database, you can use the following credentials to login as admin:
+- Email: admin@example.com
+- Password: password
+
+## Project Structure
+
+The application follows Laravel's MVC architecture:
+
+### Key Directories:
+- **app/Models/**: Contains Eloquent models for User, TravelPackage, Booking, Review, etc.
+- **app/Http/Controllers/**: Contains controllers separated by user role (Admin/User)
+- **app/Http/Middleware/**: Contains middleware like AdminMiddleware for route protection
+- **resources/views/**: Contains Blade templates organized by feature and user role
+- **routes/web.php**: Contains all web routes structured by user role
+- **database/migrations/**: Contains database schema definitions
+- **database/seeders/**: Contains data seeders for initial application data
+
+## User Roles and Permissions
+
+### Regular Users
+- Can view and book travel packages
+- Can view their booking history
+- Can leave reviews for completed travels
+- Cannot access admin features
+
+### Administrators
+- Full CRUD access to user management
+- Full CRUD access to travel package management
+- Can update booking statuses
+- Can view all user reviews
+
+## Database Schema
+
+The application uses several interrelated tables:
+
+- **users**: Stores user account information
+- **roles**: Defines user roles (admin, user)
+- **travel_packages**: Stores travel package details
+- **bookings**: Records bookings made by users
+- **reviews**: Stores user reviews for completed bookings
+
+Key relationships:
+- User has many Bookings
+- User has many Reviews
+- Booking belongs to a User and a TravelPackage
+- Review belongs to a User and a Booking
+
+## Security Implementations
+
+- **Authentication**: Secure authentication via Laravel Jetstream
+- **Authorization**: Role-based access control for protected routes
+- **CSRF Protection**: Protection against cross-site request forgery
+- **SQL Injection Protection**: Use of Eloquent ORM and prepared statements
+- **XSS Protection**: Blade template engine escapes output by default
+
+## Screenshots
+
+(Add screenshots of your application here)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
